@@ -7,6 +7,10 @@ if (-NOT ([Security.Principal.WindowsPrincipal][Security.Principal.WindowsIdenti
 $ConfigPath = "$env:USERPROFILE\.config\powershell"
 $ConfigFile = "$ConfigPath\ps_profile.ps1"
 
+if (!(Test-Path -Path $ConfigPath)) {
+    New-Item -Path $ConfigPath -ItemType "directory"
+}
+
 # Function to test internet connectivity
 function Test-InternetConnection {
     try {
@@ -82,10 +86,6 @@ if (!(Test-Path -Path $PROFILE -PathType Leaf)) {
             New-Item -Path $profilePath -ItemType "directory"
         }
 
-        if (!(Test-Path -Path $ConfigPath)) {
-            New-Item -Path $ConfigPath -ItemType "directory"
-        }
-
         Invoke-RestMethod https://github.com/sokolinivan/powershell-profile/raw/main/Microsoft.PowerShell_profile.ps1 -OutFile $PROFILE
         Invoke-RestMethod https://github.com/sokolinivan/powershell-profile/raw/main/ps_profile.ps1 -OutFile $ConfigFile
         Write-Host "The profile @ [$PROFILE] has been created."
@@ -97,7 +97,8 @@ if (!(Test-Path -Path $PROFILE -PathType Leaf)) {
 }
 else {
     try {
-        Get-Item -Path $PROFILE | Move-Item -Destination "oldprofile.ps1" -Force
+        $oldprofilePath = Split-Path -Path $PROFILE | Join-Path -ChildPath "oldprofile.ps1"
+        Get-Item -Path $PROFILE | Move-Item -Destination $oldprofilePath -Force
         Invoke-RestMethod https://github.com/sokolinivan/powershell-profile/raw/main/Microsoft.PowerShell_profile.ps1 -OutFile $PROFILE
         Invoke-RestMethod https://github.com/sokolinivan/powershell-profile/raw/main/ps_profile.ps1 -OutFile $ConfigFile
         Write-Host "The profile @ [$PROFILE] has been created and old profile removed."

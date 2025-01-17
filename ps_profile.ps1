@@ -3,7 +3,7 @@
 
 $debug = $false
 
-$ProFilePath = $env:USERPROFILE\.config\powershell\Microsoft.PowerShell_profile.ps1
+$ProFilePath = $env:USERPROFILE\.config\powershell\ps_profile.ps1
 
 if ($debug) {
     Write-Host "#######################################" -ForegroundColor Red
