@@ -3,7 +3,7 @@
 
 $debug = $false
 
-$ProFilePath = $env:USERPROFILE\.config\powershell\ps_profile.ps1
+$ProfilePath = "$env:USERPROFILE\.config\powershell\ps_profile.ps1"
 
 if ($debug) {
     Write-Host "#######################################" -ForegroundColor Red
@@ -25,7 +25,7 @@ if ($debug) {
 ############                                                                                                         ############
 ############                DO NOT MODIFY THIS FILE. THIS FILE IS HASHED AND UPDATED AUTOMATICALLY.                  ############
 ############                    ANY CHANGES MADE TO THIS FILE WILL BE OVERWRITTEN BY COMMITS TO                      ############
-############                       https://github.com/sokolinivan/powershell-profile.git.                         ############
+############                       https://github.com/sokolinivan/powershell-profile.git.                            ############
 ############                                                                                                         ############
 #!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!#
 ############                                                                                                         ############
@@ -57,17 +57,17 @@ if (Test-Path($ChocolateyProfile)) {
 function Update-Profile {
     try {
         $url = "https://raw.githubusercontent.com/sokolinivan/powershell-profile/main/ps_profile.ps1"
-        $oldhash = Get-FileHash $ProFilePath
+        $oldhash = Get-FileHash $ProfilePath
         Invoke-RestMethod $url -OutFile "$env:temp/ps_profile.ps1"
         $newhash = Get-FileHash "$env:temp/ps_profile.ps1"
         if ($newhash.Hash -ne $oldhash.Hash) {
-            Copy-Item -Path "$env:temp/ps_profile.ps1" -Destination $ProFilePath -Force
+            Copy-Item -Path "$env:temp/ps_profile.ps1" -Destination $ProfilePath -Force
             Write-Host "Profile has been updated. Please restart your shell to reflect changes" -ForegroundColor Magenta
         } else {
             Write-Host "Profile is up to date." -ForegroundColor Green
         }
     } catch {
-        Write-Error "Unable to check for `$ProFilePath updates: $_"
+        Write-Error "Unable to check for `$ProfilePath updates: $_"
     } finally {
         Remove-Item "$env:temp/ps_profile.ps1" -ErrorAction SilentlyContinue
     }
@@ -162,7 +162,7 @@ Set-Alias -Name vim -Value $EDITOR
 
 # Quick Access to Editing the Profile
 function Edit-Profile {
-    vim $ProFilePath
+    vim $ProfilePath
 }
 Set-Alias -Name ep -Value Edit-Profile
 
@@ -244,7 +244,7 @@ function uptime {
 }
 
 function reload-profile {
-    & $ProFilePath
+    & $ProfilePath
 }
 
 function unzip ($file) {
@@ -464,8 +464,8 @@ Register-ArgumentCompleter -Native -CommandName dotnet -ScriptBlock $scriptblock
 
 # Get theme from profile.ps1 or use a default theme
 function Get-Theme {
-    if (Test-Path -Path $ProFilePath -PathType leaf) {
-        $existingTheme = Select-String -Raw -Path $ProFilePath -Pattern "oh-my-posh init pwsh --config"
+    if (Test-Path -Path $PROFILE.CurrentUserAllHosts -PathType leaf) {
+        $existingTheme = Select-String -Raw -Path $PROFILE.CurrentUserAllHosts -Pattern "oh-my-posh init pwsh --config"
         if ($null -ne $existingTheme) {
             Invoke-Expression $existingTheme
             return
